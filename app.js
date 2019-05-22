@@ -1,5 +1,6 @@
 const express = require("express");
 const exphbs = require("express-handlebars");
+const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 const app = express();
@@ -28,6 +29,10 @@ app.engine(
   })
 );
 
+//Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.set("view engine", "handlebars");
 //Index route
 app.get("/", (req, res) => {
@@ -45,6 +50,29 @@ app.get("/about", (req, res) => {
 //Add idea form
 app.get("/ideas/add", (req, res) => {
   res.render("ideas/add");
+});
+
+//Process form
+app.post("/ideas", (req, res) => {
+  let errors = [];
+
+  if (!req.body.title) {
+    errors.push({ text: "Please add a title" });
+  }
+
+  if (!req.body.details) {
+    errors.push({ text: "Please add some details" });
+  }
+
+  if (errors.length > 0) {
+    res.render("ideas/add", {
+      errors: errors,
+      title: req.body.title,
+      details: req.body.details
+    });
+  } else {
+    res.send("passed");
+  }
 });
 
 const port = 5000;
