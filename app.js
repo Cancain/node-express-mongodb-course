@@ -16,6 +16,10 @@ mongoose
     console.log(err);
   });
 
+//Load idea model
+require("./models/Idea");
+const idea = mongoose.model("ideas");
+
 //Handlebars Middleware
 app.engine(
   "handlebars",
