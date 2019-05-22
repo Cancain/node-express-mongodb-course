@@ -1,15 +1,28 @@
 const express = require("express");
+const exphbs = require("express-handlebars");
 
 const app = express();
-//
+
+//Handlebars Middleware
+app.engine(
+  "handlebars",
+  exphbs({
+    defaultLayout: "main"
+  })
+);
+
+app.set("view engine", "handlebars");
 //Index route
 app.get("/", (req, res) => {
-  res.send("Index");
+  const title = "Welcome";
+  res.render("index", {
+    title: title
+  });
 });
 
 //About route
 app.get("/about", (req, res) => {
-  res.send("About");
+  res.render("about");
 });
 const port = 5000;
 

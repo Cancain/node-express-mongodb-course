@@ -9,6 +9,7 @@
   "author": "Tomas Eriksson",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.0"
+    "express": "^4.17.0",
+    "express-handlebars": "^3.1.0"
   }
 }
