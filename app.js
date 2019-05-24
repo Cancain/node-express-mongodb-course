@@ -59,6 +59,7 @@ app.use(function(req, res, next) {
 });
 
 app.set("view engine", "handlebars");
+
 //Index route
 app.get("/", (req, res) => {
   const title = "Welcome";
