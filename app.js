@@ -8,6 +8,10 @@ const mongoose = require("mongoose");
 
 const app = express();
 
+//Load routes
+const ideas = require("./routes/ideas");
+const users = require("./routes/users");
+
 //Connect to mongoose
 mongoose
   .connect("mongodb://localhost/vidjot-dev", {
@@ -19,10 +23,6 @@ mongoose
   .catch(err => {
     console.log(err);
   });
-
-//Load idea model
-require("./models/Idea");
-const Idea = mongoose.model("ideas");
 
 //Handlebars Middleware
 app.engine(
@@ -73,86 +73,9 @@ app.get("/about", (req, res) => {
   res.render("about");
 });
 
-//Idea Index page
-app.get("/ideas", (req, res) => {
-  Idea.find({})
-    .sort({ date: "desc" })
-    .then(ideas => {
-      res.render("ideas/index", {
-        ideas: ideas
-      });
-    });
-});
-
-//Add idea form
-app.get("/ideas/add", (req, res) => {
-  res.render("ideas/add");
-});
-
-//edit idea form
-app.get("/ideas/edit/:id", (req, res) => {
-  Idea.findOne({
-    _id: req.params.id
-  }).then(idea => {
-    res.render("ideas/edit", {
-      idea: idea
-    });
-  });
-});
-
-//Process form
-app.post("/ideas", (req, res) => {
-  let errors = [];
-
-  if (!req.body.title) {
-    errors.push({ text: "Please add a title" });
-  }
-
-  if (!req.body.details) {
-    errors.push({ text: "Please add some details" });
-  }
-
-  if (errors.length > 0) {
-    res.render("ideas/add", {
-      errors: errors,
-      title: req.body.title,
-      details: req.body.details
-    });
-  } else {
-    const newUser = {
-      title: req.body.title,
-      details: req.body.details
-    };
-    new Idea(newUser).save().then(idea => {
-      req.flash("success_msg", "Idea added");
-      res.redirect("/ideas");
-    });
-  }
-});
-
-//Edit form process
-app.put("/ideas/:id", (req, res) => {
-  Idea.findOne({
-    _id: req.params.id
-  }).then(idea => {
-    //New values
-    idea.title = req.body.title;
-    idea.details = req.body.details;
-
-    idea.save().then(idea => {
-      req.flash("success_msg", "Idea updated");
-      res.redirect("/ideas");
-    });
-  });
-});
-
-//Delete idea
-app.delete("/ideas/:id", (req, res) => {
-  Idea.remove({ _id: req.params.id }).then(() => {
-    req.flash("success_msg", "Idea deleted");
-    res.redirect("/ideas");
-  });
-});
+//Use routes
+app.use("/ideas", ideas);
+app.use("/users", users);
 
 const port = 5000;
 
