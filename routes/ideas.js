@@ -1,41 +1,44 @@
+/* eslint-disable no-param-reassign */
 const express = require("express");
 const mongoose = require("mongoose");
+
 const router = express.Router();
 
-//Load idea model
+// Load idea model
 require("../models/Idea");
+
 const Idea = mongoose.model("ideas");
 
-//Idea Index page
+// Idea Index page
 router.get("/", (req, res) => {
   Idea.find({})
     .sort({ date: "desc" })
-    .then(ideas => {
+    .then((ideas) => {
       res.render("ideas/index", {
-        ideas: ideas
+        ideas,
       });
     });
 });
 
-//Add idea form
+// Add idea form
 router.get("/add", (req, res) => {
   res.render("ideas/add");
 });
 
-//edit idea form
+// edit idea form
 router.get("/edit/:id", (req, res) => {
   Idea.findOne({
-    _id: req.params.id
-  }).then(idea => {
+    _id: req.params.id,
+  }).then((idea) => {
     res.render("ideas/edit", {
-      idea: idea
+      idea,
     });
   });
 });
 
-//Process form
+// Process form
 router.post("/", (req, res) => {
-  let errors = [];
+  const errors = [];
 
   if (!req.body.title) {
     errors.push({ text: "Please add a title" });
@@ -47,39 +50,39 @@ router.post("/", (req, res) => {
 
   if (errors.length > 0) {
     res.render("ideas/add", {
-      errors: errors,
+      errors,
       title: req.body.title,
-      details: req.body.details
+      details: req.body.details,
     });
   } else {
     const newUser = {
       title: req.body.title,
-      details: req.body.details
+      details: req.body.details,
     };
-    new Idea(newUser).save().then(idea => {
+    new Idea(newUser).save().then(() => {
       req.flash("success_msg", "Idea added");
       res.redirect("/ideas");
     });
   }
 });
 
-//Edit form process
+// Edit form process
 router.put("/:id", (req, res) => {
   Idea.findOne({
-    _id: req.params.id
-  }).then(idea => {
-    //New values
+    _id: req.params.id,
+  }).then((idea) => {
+    // New values
     idea.title = req.body.title;
     idea.details = req.body.details;
 
-    idea.save().then(idea => {
+    idea.save().then(() => {
       req.flash("success_msg", "Idea updated");
       res.redirect("/ideas");
     });
   });
 });
 
-//Delete idea
+// Delete idea
 router.delete("/:id", (req, res) => {
   Idea.remove({ _id: req.params.id }).then(() => {
     req.flash("success_msg", "Idea deleted");
